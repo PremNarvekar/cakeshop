@@ -42,7 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static files for frontend
-const publicPath = path.join(__dirname, '../../public');
+const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
 
 // Uploads static viewing

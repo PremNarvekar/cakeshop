@@ -27,7 +27,10 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: ['https://cakeeshopp.netlify.app', 'http://localhost:3000'],
+  credentials: true
+}));
 
 // Request Logging
 if (process.env.NODE_ENV !== 'production') {

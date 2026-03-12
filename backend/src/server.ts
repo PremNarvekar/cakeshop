@@ -41,12 +41,17 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Static files for frontend
+const publicPath = path.join(__dirname, '../../public');
+app.use(express.static(publicPath));
+
 // Uploads static viewing
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('CandyCake API is running...');
+// Catch-all for frontend routes (SPA)
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) return; // Don't serve index.html for API calls
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 import adminRoutes from './routes/admin.routes';

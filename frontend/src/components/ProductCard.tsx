@@ -27,7 +27,7 @@ const ProductCard = ({ product }: { product: ProductProps }) => {
 
     return (
         <div className="group flex flex-col items-center justify-between text-center transition-all duration-300 h-full">
-                <Link href={`/cake/${product.slug}`} className="absolute top-0 w-full h-full z-20"></Link>
+                <Link href={`/cake?slug=${product.slug}`} className="absolute top-0 w-full h-full z-20"></Link>
                 <div className="relative w-[90%] md:w-full aspect-[4/3] md:aspect-square mb-6 flex justify-center items-center rounded-[24px] md:rounded-[32px] overflow-hidden drop-shadow-md group-hover:shadow-[0_20px_40px_rgba(162,20,20,0.12)] transition-all duration-500 ease-out transform group-hover:-translate-y-4 group-hover:scale-[1.02]">
                 {product.category && (
                     <span className="absolute top-4 left-4 bg-[#A21414] text-white text-[11px] font-bold px-3 py-1.5 rounded-full z-10 shadow-sm whitespace-nowrap">
@@ -62,7 +62,7 @@ const ProductCard = ({ product }: { product: ProductProps }) => {
                     </div>
 
                     <Link
-                        href={`/cake/${product.slug}`}
+                        href={`/cake?slug=${product.slug}`}
                         className="w-12 h-12 bg-[#2A2A2A] text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-[#A21414] shadow-md group-hover:shadow-lg z-30 relative"
                         aria-label="View Details"
                     >

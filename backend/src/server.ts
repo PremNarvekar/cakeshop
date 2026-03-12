@@ -28,7 +28,7 @@ app.use(limiter);
 
 // Enable CORS
 app.use(cors({
-  origin: ['https://cakeeshopp.netlify.app', 'http://localhost:3000'],
+  origin: ['https://cakeshop-jjxh.onrender.com', 'https://cakeeshopp.netlify.app', 'http://localhost:3000'],
   credentials: true
 }));
 

@@ -220,7 +220,7 @@ export default function AdminDashboard() {
                       <tr key={cake._id} className="border-b hover:bg-gray-50 transition">
                         <td className="p-4">
                           {cake.images && cake.images.length > 0 ? (
-                            <img src={`http://localhost:5000${cake.images[0]}`} alt={cake.name} className="w-16 h-16 object-cover rounded shadow-sm" crossOrigin="anonymous" />
+                            <img src={cake.images[0].startsWith('http') ? cake.images[0] : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${cake.images[0]}`} alt={cake.name} className="w-16 h-16 object-cover rounded shadow-sm" crossOrigin="anonymous" />
                           ) : (
                             <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs shadow-sm">No img</div>
                           )}

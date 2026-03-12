@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                                     {cart.map(item => (
                                         <div key={item._id} className="flex gap-4">
                                             <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-[#E8E2D5] relative">
-                                                <Image src={item.image ? `http://localhost:5000${item.image}` : '/cake/products/fruit-cake.jpg'} unoptimized alt={item.name} fill className="object-cover" />
+                                                <Image src={item.image ? (item.image.startsWith('http') ? item.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.image}`) : '/cake/products/fruit-cake.jpg'} unoptimized alt={item.name} fill className="object-cover" />
                                             </div>
                                             <div className="flex-grow flex justify-between items-center">
                                                 <div>

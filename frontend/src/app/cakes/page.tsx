@@ -124,8 +124,15 @@ export default function CakesPage() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {cakes.map((cake) => {
+                            const getImageUrl = (img?: string) => {
+                                if (!img) return "/cake/products/fruit-cake.jpg";
+                                if (img.startsWith("http")) return img;
+                                const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:5000";
+                                return `${baseUrl}${img}`;
+                            };
+
                             const imgSrc = cake.images && cake.images.length > 0
-                                ? `http://localhost:5000${cake.images[0]}`
+                                ? getImageUrl(cake.images[0])
                                 : "/cake/products/fruit-cake.jpg";
 
                             return (

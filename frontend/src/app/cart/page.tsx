@@ -52,7 +52,7 @@ export default function CartPage() {
                                     >
                                         <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shrink-0 border border-[#E8E2D5]">
                                             <Image 
-                                                src={item.image ? `http://localhost:5000${item.image}` : '/cake/products/fruit-cake.jpg'} 
+                                                src={item.image ? (item.image.startsWith('http') ? item.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.image}`) : '/cake/products/fruit-cake.jpg'} 
                                                 unoptimized
                                                 alt={item.name} 
                                                 fill 

@@ -100,14 +100,14 @@ export default function CakeDetailPage() {
                   onClick={() => setActiveImage(img)}
                   className={`relative w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all ${activeImage === img ? 'border-[#A21414] scale-105' : 'border-transparent hover:border-[#E8E2D5]'}`}
                 >
-                  <Image src={`http://localhost:5000${img}`} unoptimized alt={`${cake.name} view ${i}`} fill className="object-cover" />
+                  <Image src={img.startsWith('http') ? img : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${img}`} unoptimized alt={`${cake.name} view ${i}`} fill className="object-cover" />
                 </button>
               ))}
             </div>
             
             <div className="relative w-full aspect-square bg-white rounded-[32px] overflow-hidden shadow-sm border border-[#E8E2D5]">
               {activeImage ? (
-                <Image src={`http://localhost:5000${activeImage}`} unoptimized alt={cake.name} fill className="object-cover" />
+                <Image src={activeImage.startsWith('http') ? activeImage : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${activeImage}`} unoptimized alt={cake.name} fill className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-100 italic text-gray-500">No Image provided</div>
               )}

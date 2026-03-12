@@ -14,8 +14,15 @@ interface ProductProps {
 }
 
 const ProductCard = ({ product }: { product: ProductProps }) => {
+    const getImageUrl = (img?: string) => {
+        if (!img) return "/cake/products/fruit-cake.jpg";
+        if (img.startsWith("http")) return img;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:5000";
+        return `${baseUrl}${img}`;
+    };
+
     const defaultImage = product.images && product.images.length > 0 
-        ? `http://localhost:5000${product.images[0]}` 
+        ? getImageUrl(product.images[0]) 
         : "/cake/products/fruit-cake.jpg";
 
     return (

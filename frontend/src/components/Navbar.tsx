@@ -45,12 +45,9 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     
-    // Attempt useCart, handle SSR gracefully if context not loaded immediately
-    let totalItems = 0;
-    try {
-        const cartData = useCart();
-        totalItems = cartData.totalItems;
-    } catch (e) {}
+    // Correctly call hooks at top level
+    const cartData = useCart();
+    const totalItems = cartData?.totalItems || 0;
 
     useEffect(() => {
         const handleScroll = () => {

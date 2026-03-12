@@ -3,6 +3,19 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
+// Cake Parts Animation Staggers (Moved outside to prevent re-creation)
+const containerVars: any = {
+  animate: { transition: { staggerChildren: 0.3 } }
+};
+
+const dropInBounce: any = {
+  initial: { y: -200, opacity: 0, scale: 0.8 },
+  animate: {
+    y: 0, opacity: 1, scale: 1,
+    transition: { type: "spring", stiffness: 300, damping: 15 }
+  }
+};
+
 const Loader = ({ onComplete }: { onComplete: () => void }) => {
   useEffect(() => {
     // Total animation time before unmounting
@@ -13,19 +26,6 @@ const Loader = ({ onComplete }: { onComplete: () => void }) => {
 
     return () => clearTimeout(timer);
   }, [onComplete]);
-
-  // Cake Parts Animation Staggers
-  const containerVars: any = {
-    animate: { transition: { staggerChildren: 0.3 } }
-  };
-
-  const dropInBounce: any = {
-    initial: { y: -200, opacity: 0, scale: 0.8 },
-    animate: {
-      y: 0, opacity: 1, scale: 1,
-      transition: { type: "spring", stiffness: 300, damping: 15 }
-    }
-  };
 
   return (
     <motion.div

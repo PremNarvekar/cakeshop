@@ -124,7 +124,7 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
             }
         });
 
-    }, { dependencies: [isLoaded] });
+    }, { scope: containerRef, dependencies: [isLoaded] });
 
     return (
         <div ref={containerRef} className="relative w-full h-screen bg-[#FDFBF7] overflow-hidden m-0 p-0 border-0 outline-none flex items-center justify-center">

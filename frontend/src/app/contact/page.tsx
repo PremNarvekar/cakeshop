@@ -10,7 +10,7 @@ export default function ContactPage() {
                 <p className="text-xl text-gray-500 mb-16">Reach out to us on WhatsApp for custom orders.</p>
                 <div className="h-[50vh] flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl text-gray-400 font-bold uppercase tracking-widest gap-6">
                     <a
-                        href="https://wa.me/1234567890"
+                        href="https://wa.me/9324790894"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-whatsapp px-8 py-4 rounded-full font-bold flex items-center gap-3"

@@ -22,28 +22,57 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
-const products = [
-    { id: 1, name: "The Classic Glaze", price: "$32.00", image: "/cake/products/fruit-cake.jpg", shortDescription: "A warm, golden classic with a soft center." },
-    { id: 2, name: "Strawberry Velvet", price: "$45.00", image: "/cake/products/red-velvet.jpg", tag: "Customer Favorite", shortDescription: "Rich red velvet layers with fresh strawberry cream." },
-    { id: 3, name: "Lemon Sunburst", price: "$38.00", image: "/cake/products/lemon-meringue.jpg", shortDescription: "Bright and zesty lemon cake perfect for afternoons." },
-];
+// Removed static products
 
 export default function Home() {
     const [assetsReady, setAssetsReady] = useState(false);
     const [loaderFinished, setLoaderFinished] = useState(false);
+    const [cakes, setCakes] = useState<any[]>([]);
+    const [loadingCakes, setLoadingCakes] = useState(true);
+    const [hasMounted, setHasMounted] = useState(false);
+    
     const showLoader = !assetsReady || !loaderFinished;
+
+    useEffect(() => {
+        setHasMounted(true);
+        console.log("HOME: Component mounted");
+    }, []);
+
+    useEffect(() => {
+        console.log("HOME: State Update", { assetsReady, loaderFinished, showLoader });
+    }, [assetsReady, loaderFinished, showLoader]);
+
+    useEffect(() => {
+        const fetchCakes = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cakes?limit=6`);
+                const data = await res.json();
+                if (data.success) {
+                    setCakes(data.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch cakes", err);
+            } finally {
+                setLoadingCakes(false);
+            }
+        };
+        fetchCakes();
+    }, []);
 
     const mainRef = useRef<HTMLElement>(null);
 
     // Lock scroll during loading
     useEffect(() => {
+        if (!hasMounted) return;
         if (showLoader) {
             document.body.style.overflow = "hidden";
             window.scrollTo(0, 0); // Force top
         } else {
             document.body.style.overflow = "";
         }
-    }, [showLoader]);
+    }, [showLoader, hasMounted]);
+
+    if (!hasMounted) return null;
 
     // Setup scroll triggers and marquee
     useGSAP(() => {
@@ -78,16 +107,19 @@ export default function Home() {
 
     return (
         <main ref={mainRef} className="relative min-h-screen bg-[#FFFFFF] overflow-x-hidden">
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {showLoader && (
-                    <Loader onComplete={() => setLoaderFinished(true)} />
+                    <Loader key="main-loader" onComplete={() => {
+                        console.log("HOME: Loader animation complete");
+                        setLoaderFinished(true);
+                    }} />
                 )}
             </AnimatePresence>
 
             <Navbar />
 
             {/* Hero Section Auto-Scrubs on Scroll via ScrollTrigger */}
-            <div className="relative z-10 bg-black overflow-hidden">
+            <div className="relative z-10 bg-[#FDFBF7] overflow-hidden">
                 <CakeScrollAnimation onLoadComplete={() => setAssetsReady(true)} />
             </div>
 
@@ -181,9 +213,15 @@ export default function Home() {
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:gap-16 pt-8 pb-16">
-                            {products.map((product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
+                            {loadingCakes ? (
+                                <p className="col-span-3 text-center text-gray-500">Loading exquisite cakes...</p>
+                            ) : cakes.length > 0 ? (
+                                cakes.map((cake) => (
+                                    <ProductCard key={cake._id} product={cake} />
+                                ))
+                            ) : (
+                                <p className="col-span-3 text-center text-gray-500">No cakes available right now.</p>
+                            )}
                         </div>
 
                     </div>

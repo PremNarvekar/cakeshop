@@ -19,8 +19,9 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
     const [images, setImages] = useState<HTMLImageElement[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const frameCount = 176;
+    const currentFrameRef = useRef(0);
 
-    // Render logic with requestAnimationFrame
+    // Render logic
     const renderFrame = useCallback((frameIndex: number) => {
         if (!canvasRef.current || !images[frameIndex]) return;
         const canvas = canvasRef.current;
@@ -28,14 +29,14 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
         if (!context) return;
 
         const img = images[frameIndex];
+        currentFrameRef.current = frameIndex;
 
+        // Cover-fit the image into the canvas
         const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-        const x = (canvas.width / 2) - (img.width / 2) * scale;
-        const y = (canvas.height / 2) - (img.height / 2) * scale;
+        const x = (canvas.width - img.width * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
 
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.imageSmoothingEnabled = true;
-        context.imageSmoothingQuality = "high";
         context.drawImage(img, x, y, img.width * scale, img.height * scale);
     }, [images]);
 
@@ -61,7 +62,6 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
                     onLoadCompleteRef.current();
                 }
             };
-            // Fallback for missing frames
             img.onerror = () => {
                 loadedCount++;
                 if (loadedCount === frameCount) {
@@ -73,22 +73,27 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
         }
         setImages(loadedImages);
 
-        // Cleanup
         return () => {
             loadedImages.forEach(img => {
-                img.src = ""; // Abort pending requests if unmounted
+                img.src = "";
             });
         }
     }, []);
 
-    // Handle Resize
+    // Handle Resize — set canvas to exact CSS pixel dimensions (no devicePixelRatio scaling)
     useEffect(() => {
         const handleResize = () => {
             if (!canvasRef.current) return;
-            canvasRef.current.width = window.innerWidth * window.devicePixelRatio;
-            canvasRef.current.height = window.innerHeight * window.devicePixelRatio;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            // Set canvas internal resolution to match CSS size exactly
+            // This prevents any scaling/blurring
+            canvasRef.current.width = w;
+            canvasRef.current.height = h;
+
             if (isLoaded) {
-                renderFrame(1);
+                renderFrame(currentFrameRef.current || 1);
             }
         };
 
@@ -100,20 +105,20 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
     useGSAP(() => {
         if (!isLoaded || !containerRef.current || !canvasRef.current) return;
 
-        // render initial frame
-        renderFrame(1);
+        // Force initial frame render immediately
+        renderFrame(0);
 
         ScrollTrigger.create({
             trigger: containerRef.current,
             start: "top top",
-            end: "+=400%", // 4 screens of scrolling for the cake animation
-            scrub: 1, // smooth scrubbing
+            end: "+=400%",
+            scrub: 1,
             pin: true,
             onUpdate: (self) => {
                 const progress = self.progress;
                 const frameIndex = Math.min(
                     frameCount - 1,
-                    Math.max(1, Math.floor(progress * frameCount))
+                    Math.max(0, Math.floor(progress * frameCount))
                 );
                 renderFrame(frameIndex);
             }
@@ -122,10 +127,16 @@ const CakeScrollAnimation = ({ onLoadComplete }: Props) => {
     }, { dependencies: [isLoaded] });
 
     return (
-        <div ref={containerRef} className="relative w-full h-screen bg-black overflow-hidden m-0 p-0 border-0 outline-none flex">
+        <div ref={containerRef} className="relative w-full h-screen bg-[#FDFBF7] overflow-hidden m-0 p-0 border-0 outline-none flex items-center justify-center">
             <canvas
                 ref={canvasRef}
-                className="w-full h-full object-cover block"
+                className="transition-opacity duration-1000"
+                style={{ 
+                    display: "block", 
+                    width: "100%", 
+                    height: "100%",
+                    opacity: isLoaded ? 1 : 0
+                }}
             />
         </div>
     );

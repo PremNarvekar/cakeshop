@@ -7,6 +7,7 @@ const Loader = ({ onComplete }: { onComplete: () => void }) => {
   useEffect(() => {
     // Total animation time before unmounting
     const timer = setTimeout(() => {
+      console.log("LOADER: Timer finished");
       onComplete();
     }, 3200);
 

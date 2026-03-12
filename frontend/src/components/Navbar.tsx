@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/context/CartContext";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -43,6 +44,13 @@ const mobileLinkVars: any = {
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    
+    // Attempt useCart, handle SSR gracefully if context not loaded immediately
+    let totalItems = 0;
+    try {
+        const cartData = useCart();
+        totalItems = cartData.totalItems;
+    } catch (e) {}
 
     useEffect(() => {
         const handleScroll = () => {
@@ -112,47 +120,56 @@ const Navbar = () => {
 
                     {/* Desktop Cart Button - Expanding Island Style */}
                     <div className="hidden md:block">
-                        <motion.a
-                            href="https://wa.me/1234567890"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            href="/cart"
                             className={cn(
                                 "flex items-center justify-center rounded-full overflow-hidden group shadow-md",
                                 isScrolled ? "bg-[#2A2A2A] text-white" : "bg-white/20 backdrop-blur-md text-white shadow-[0_4px_30px_rgba(0,0,0,0.1)] border border-white/30 hover:bg-white/30"
                             )}
-                            initial={{ width: 44, height: 44 }}
-                            whileHover={{ width: 110 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                            style={{ padding: "0" }}
                         >
-                            <div className="flex items-center justify-center h-full w-[44px] shrink-0">
-                                <ShoppingCart size={18} strokeWidth={2.5} className="group-hover:text-[#FFF0F2] transition-colors" />
-                            </div>
-                            <motion.span
-                                className="font-bold text-[14px] whitespace-nowrap overflow-hidden"
-                                initial={{ opacity: 0, width: 0 }}
-                                whileHover={{ opacity: 1, width: "auto" }}
-                                transition={{ duration: 0.2 }}
+                            <motion.div
+                                initial={{ width: 44, height: 44 }}
+                                whileHover={{ width: 110 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                className="flex items-center h-full"
                             >
-                                Cart
-                            </motion.span>
-                        </motion.a>
+                                <div className="flex items-center justify-center h-full w-[44px] shrink-0 relative">
+                                    <ShoppingCart size={18} strokeWidth={2.5} className="group-hover:text-[#FFF0F2] transition-colors" />
+                                    {totalItems > 0 && (
+                                        <span className="absolute top-[8px] right-[6px] bg-[#A21414] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                                            {totalItems}
+                                        </span>
+                                    )}
+                                </div>
+                                <motion.span
+                                    className="font-bold text-[14px] whitespace-nowrap overflow-hidden pr-4"
+                                    initial={{ opacity: 0, width: 0 }}
+                                    whileHover={{ opacity: 1, width: "auto" }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    Cart
+                                </motion.span>
+                            </motion.div>
+                        </Link>
                     </div>
 
                     {/* Mobile Controls (Menu & Cart icons side-by-side) */}
                     <div className="md:hidden flex items-center gap-2">
-                        <a
-                            href="https://wa.me/1234567890"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            href="/cart"
                             className={cn(
-                                "flex items-center justify-center h-10 w-10 rounded-full transition-colors",
+                                "relative flex items-center justify-center h-10 w-10 rounded-full transition-colors",
                                 isScrolled ? "bg-[#2A2A2A] text-white" : "bg-white/20 backdrop-blur-md text-white border border-white/30 shadow-md"
                             )}
                             aria-label="View Cart"
                         >
                             <ShoppingCart size={18} strokeWidth={2.5} />
-                        </a>
+                            {totalItems > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-[#A21414] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                                    {totalItems}
+                                </span>
+                            )}
+                        </Link>
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
                             className={cn(
@@ -219,15 +236,14 @@ const Navbar = () => {
                             transition={{ delay: 0.6 }}
                             className="w-full p-8 pb-12 text-center"
                         >
-                            <a
-                                href="https://wa.me/1234567890"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <Link
+                                href="/cart"
+                                onClick={() => setIsMobileMenuOpen(false)}
                                 className="inline-flex items-center justify-center gap-3 bg-[#2A2A2A] text-white w-full max-w-[300px] py-4 rounded-full text-lg font-bold shadow-2xl hover:bg-black transition duration-300 transform hover:-translate-y-1"
                             >
                                 <ShoppingCart size={22} />
-                                View Cart
-                            </a>
+                                View Cart {totalItems > 0 && `(${totalItems})`}
+                            </Link>
                         </motion.div>
                     </motion.div>
                 )}

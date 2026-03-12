@@ -57,7 +57,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/cakes', cakeRoutes);
 
 // Catch-all for frontend routes (SPA) - Must be after API routes
-app.get('(.*)', (req, res) => {
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 // Error Middlewares

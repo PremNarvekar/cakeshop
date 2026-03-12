@@ -44,8 +44,22 @@ export default function Home() {
 
     useEffect(() => {
         const fetchCakes = async () => {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            if (!apiUrl) {
+                console.warn("HOME: NEXT_PUBLIC_API_URL is not defined. Skipping fetch.");
+                setLoadingCakes(false);
+                return;
+            }
+
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cakes?limit=6`);
+                const res = await fetch(`${apiUrl}/cakes?limit=6`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new TypeError("Oops, we haven't got JSON!");
+                }
+
                 const data = await res.json();
                 if (data.success) {
                     setCakes(data.data);

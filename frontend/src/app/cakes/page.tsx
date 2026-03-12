@@ -31,9 +31,16 @@ export default function CakesPage() {
     }, [activeCategory, page, searchQuery]);
 
     const fetchCakes = async () => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) {
+            console.warn("CAKES: NEXT_PUBLIC_API_URL is not defined. Skipping fetch.");
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         try {
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/cakes?page=${page}&limit=12`;
+            let url = `${apiUrl}/cakes?page=${page}&limit=12`;
             if (activeCategory !== "All") {
                 url += `&category=${encodeURIComponent(activeCategory)}`;
             }
@@ -41,13 +48,20 @@ export default function CakesPage() {
                 url += `&search=${encodeURIComponent(searchQuery)}`;
             }
             const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new TypeError("Oops, we haven't got JSON!");
+            }
+
             const data = await res.json();
             if (data.success) {
                 setCakes(data.data);
                 setTotalPages(data.totalPages);
             }
         } catch (err) {
-            console.error(err);
+            console.error("Failed to fetch cakes", err);
         } finally {
             setLoading(false);
         }

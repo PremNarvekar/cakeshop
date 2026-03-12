@@ -48,11 +48,6 @@ app.use(express.static(publicPath));
 // Uploads static viewing
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
-// Catch-all for frontend routes (SPA)
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) return; // Don't serve index.html for API calls
-  res.sendFile(path.join(publicPath, 'index.html'));
-});
 
 import adminRoutes from './routes/admin.routes';
 import cakeRoutes from './routes/cake.routes';
@@ -60,6 +55,11 @@ import cakeRoutes from './routes/cake.routes';
 // APIs will be mounted here
 app.use('/api/admin', adminRoutes);
 app.use('/api/cakes', cakeRoutes);
+
+// Catch-all for frontend routes (SPA) - Must be after API routes
+app.get('(.*)', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
+});
 // Error Middlewares
 app.use(notFound);
 app.use(errorHandler);

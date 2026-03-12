@@ -60,7 +60,6 @@ function arrayLimit(val: string[]) {
 // Indexes for optimization
 cakeSchema.index({ name: 1 });
 cakeSchema.index({ category: 1 });
-cakeSchema.index({ slug: 1 });
 cakeSchema.index({ createdAt: -1 });
 
 const Cake: Model<ICake> = mongoose.model<ICake>('Cake', cakeSchema);
